@@ -11,7 +11,8 @@ interface SceneCardProps {
 }
 
 export const SceneCard: React.FC<SceneCardProps> = ({ scene, headline, aspectRatio, onGenerateImage }) => {
-  const [copied, setCopied] = useState(false);
+  const [scriptCopied, setScriptCopied] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -27,8 +28,16 @@ export const SceneCard: React.FC<SceneCardProps> = ({ scene, headline, aspectRat
     e.stopPropagation();
     if (!scene.scriptSegment) return;
     navigator.clipboard.writeText(scene.scriptSegment).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setScriptCopied(true);
+      setTimeout(() => setScriptCopied(false), 2000);
+    });
+  };
+
+  const handleCopyPrompt = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(scene.imagePrompt).then(() => {
+      setPromptCopied(true);
+      setTimeout(() => setPromptCopied(false), 2000);
     });
   };
 
@@ -86,13 +95,29 @@ export const SceneCard: React.FC<SceneCardProps> = ({ scene, headline, aspectRat
           <h3 className="text-xl font-bold text-white mb-2">{scene.title}</h3>
           <p className="text-gray-400 text-xs line-clamp-3 leading-relaxed">{scene.summary}</p>
         </div>
+
+        {/* Image Prompt Section */}
+        <div className="bg-indigo-900/10 p-3 rounded-xl border border-indigo-900/30">
+          <div className="flex justify-between items-center mb-1.5">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-3 h-3 text-indigo-400" />
+              <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Image Prompt (EN)</span>
+            </div>
+            <button onClick={handleCopyPrompt} className="text-indigo-400 hover:text-white transition-colors" title="프롬프트 복사">
+              {promptCopied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+            </button>
+          </div>
+          <p className="text-[10px] text-gray-500 italic leading-relaxed line-clamp-2">
+            {scene.imagePrompt}
+          </p>
+        </div>
         
         {scene.scriptSegment && (
           <div className="bg-black/40 p-3 rounded-xl border border-gray-800/50">
             <div className="flex justify-between items-center mb-1">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">대본 내용</span>
               <button onClick={handleCopyScript} className="text-gray-500 hover:text-white transition-colors" title="복사하기">
-                {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+                {scriptCopied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
               </button>
             </div>
             <div className="text-[10px] text-gray-400 italic max-h-20 overflow-y-auto custom-scrollbar leading-relaxed">{scene.scriptSegment}</div>
